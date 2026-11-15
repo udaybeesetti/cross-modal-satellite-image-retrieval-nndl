@@ -1,0 +1,121 @@
+\documentclass[$if(fontsize)$$fontsize$,$endif$a4paper,oneside]{report}
+
+\usepackage{geometry}
+$if(geometry)$
+\geometry{$for(geometry)$$geometry$$sep$,$endfor$}
+$endif$
+
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{fontspec}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{calc}
+\usepackage{framed}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{fancyvrb}
+\usepackage[most]{tcolorbox} % Added for modern styled boxes
+
+% Allow line breaks in backticks (\texttt)
+\usepackage{xurl}
+\makeatletter
+\g@addto@macro\ttfamily{\hyphenchar\font=`\-}
+\makeatother
+
+% Font shaping & layout (XeLaTeX optimization)
+\defaultfontfeatures{Ligatures=TeX}
+
+% Prevent pandoc tightlist errors
+\providecommand{\tightlist}{
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}
+}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,
+    urlcolor=cyan,
+    citecolor=blue,
+    pdftitle={$title$},
+    pdfauthor={$author$}
+}
+
+$if(highlighting-css)$
+$highlighting-css$
+$endif$
+
+$common.latex()$
+
+% --- Custom Code Block Styling (Box + Line Numbers) ---
+% 1. Enable line numbers globally for Pandoc's Highlighting environment
+\fvset{
+  numbers=left,
+  numbersep=8pt,
+  numberblanklines=true,
+  fontsize=\small
+}
+% Style the line numbers (gray, tiny, sans-serif)
+\renewcommand{\theFancyVerbLine}{\sffamily\textcolor{gray}{\scriptsize\arabic{FancyVerbLine}}}
+
+% 2. Override Pandoc's 'Shaded' box with a sleek tcolorbox
+\definecolor{codebg}{HTML}{F8F9FA}
+\definecolor{codeframe}{HTML}{D0D7DE}
+
+\AtBeginDocument{
+  \renewenvironment{Shaded}{
+    \begin{tcolorbox}[
+      breakable,
+      enhanced,
+      colback=codebg,
+      colframe=codeframe,
+      boxrule=0.6pt,
+      arc=4pt,
+      left=18pt, % Extra left padding to keep line numbers inside the box
+      right=8pt,
+      top=6pt,
+      bottom=6pt,
+      before skip=10pt,
+      after skip=10pt
+    ]
+  }{
+    \end{tcolorbox}
+  }
+}
+% ------------------------------------------------------
+
+\begin{document}
+
+\begin{titlepage}
+    \centering
+    \vspace*{2cm}
+    {\Huge \bfseries $title$ \par}
+    \vspace{1.5cm}
+    {\Large $subtitle$ \par}
+    \vspace{3cm}
+    {\large \bfseries $author$ \par}
+    \vspace{2cm}
+    {\large $date$ \par}
+    \vfill
+    $if(abstract)$
+    \begin{minipage}{0.8\textwidth}
+    \textbf{Abstract} \par
+    \vspace{0.5cm}
+    $abstract$
+    \end{minipage}
+    $endif$
+    \vfill
+\end{titlepage}
+
+$if(toc)$
+\tableofcontents
+\newpage
+$endif$
+
+$body$
+
+\end{document}
