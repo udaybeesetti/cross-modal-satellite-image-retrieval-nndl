@@ -10,6 +10,7 @@
 #
 # PREREQUISITES (Fedora / RPM-based Linux):
 #   sudo dnf install pandoc texlive-scheme-basic texlive-xetex
+#   Older Pandoc versions also need pandoc-citeproc for citation processing.
 #
 # HOW TO RUN:
 #   chmod +x build.sh      # Make executable (only needed once)
@@ -37,6 +38,18 @@ for required_command in pandoc xelatex; do
         exit 1
     fi
 done
+
+# Pandoc added built-in citeproc support in version 2.11. Ubuntu 22.04 ships
+# Pandoc 2.9, which requires the separate pandoc-citeproc filter.
+if pandoc --help | grep -q -- '--citeproc'; then
+    citation_options=(--citeproc)
+elif command -v pandoc-citeproc >/dev/null 2>&1; then
+    citation_options=(--filter=pandoc-citeproc)
+else
+    echo "Error: this Pandoc version needs the 'pandoc-citeproc' filter." >&2
+    echo "Install it with: sudo apt install pandoc-citeproc" >&2
+    exit 1
+fi
 
 # Create the build output directory if it doesn't already exist.
 # -p flag means "no error if it already exists, create parent dirs too".
@@ -66,10 +79,8 @@ echo "Compiling Markdown sections into PDF..."
 #   --toc                       → Generate a Table of Contents automatically
 #                                  based on the section headings in the .md files.
 #   --number-sections           → Auto-number all headings: 1, 1.1, 1.1.2 etc.
-#   --citeproc                  → Activate Pandoc's built-in citation processor.
-#                                  It reads [@citationKey] tags in the Markdown,
-#                                  looks them up in references.bib, and formats
-#                                  them according to ieee.csl (IEEE style).
+#   citation processor           → Uses built-in citeproc when supported; older
+#                                  Pandoc versions use the pandoc-citeproc filter.
 #   -o build/final_technical_report.pdf → Output file path.
 # -----------------------------------------------------------------------------
 
@@ -80,7 +91,7 @@ pandoc metadata.yaml \
     --top-level-division=chapter \
     --toc \
     --number-sections \
-    --citeproc \
+    "${citation_options[@]}" \
     -o build/final_technical_report.pdf
 
 echo "Build complete. Check build/final_technical_report.pdf"

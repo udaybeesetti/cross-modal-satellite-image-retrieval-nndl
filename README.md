@@ -486,7 +486,24 @@ matplotlib     # Visualization
 
 The full research article is written in modular Markdown files under `sections/` and compiled into a publication-grade PDF using **Pandoc** + **XeLaTeX**.
 
-### Install Prerequisites (Fedora Linux)
+### Install Prerequisites
+
+**Ubuntu / Debian:**
+
+```bash
+sudo apt update
+sudo apt install pandoc texlive-xetex
+```
+
+Ubuntu 22.04 provides Pandoc 2.9, which needs the separate citation filter:
+
+```bash
+sudo apt install pandoc-citeproc
+```
+
+Newer Pandoc releases include citation processing and do not need that extra package.
+
+**Fedora Linux:**
 
 ```bash
 sudo dnf install pandoc texlive-scheme-basic texlive-xetex
